@@ -1,4 +1,4 @@
-# BetaVision
+# HoldSense
 
 AI-powered route reading app for bouldering that analyzes holds and suggests sequences tailored to individual climber anthropometry.
 
@@ -11,7 +11,7 @@ Climbers struggle with route reading, especially when:
 
 ## 💡 Solution
 
-BetaVision provides instant, personalized route analysis using computer vision and ML.
+HoldSense provides instant, personalized route analysis using computer vision and ML.
 
 ## 🚀 Current Status
 
@@ -32,8 +32,8 @@ BetaVision provides instant, personalized route analysis using computer vision a
 
 ## 📱 Installation
 ```bash
-git clone https://github.com/Dylan-Maung/betavision.git
-cd betavision
+git clone https://github.com/Dylan-Maung/holdsense.git
+cd holdsense
 npm install
 npm start
 ```
