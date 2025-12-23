@@ -1,4 +1,4 @@
-import { APP_SCHEME, BASE_URL, GOOGLE_AUTH_URL, GOOGLE_CLIENT_ID, GOOGLE_REDIRECT_URI } from "@/constants/constants";
+import { APP_SCHEME, BASE_URL, GOOGLE_AUTH_URL, GOOGLE_CLIENT_ID, GOOGLE_REDIRECT_URI } from "@/lib/constants";
 
 /**
  * Initiates Google OAuth flow by redirecting user to Google's authorization endpoint with proper parameters

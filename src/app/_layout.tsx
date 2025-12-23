@@ -10,8 +10,8 @@ export default function RootLayout() {
     <AuthProvider>
       <PaperProvider>
         <Stack>
-          <Stack.Screen name="index" options={{ headerShown: false }} />
-          <Stack.Screen name="Home" options={{ headerShown: false }} />
+          <Stack.Screen name="(protected)" options={{ headerShown: false, animation: "none" }} />
+          <Stack.Screen name="login" options={{ headerShown: false, animation: "none" }} />
         </Stack>
         <StatusBar style="auto" />
       </PaperProvider>

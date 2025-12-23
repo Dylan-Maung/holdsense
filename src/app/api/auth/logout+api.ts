@@ -1,4 +1,4 @@
-import { COOKIE_NAME, COOKIE_OPTIONS } from "@/constants/constants";
+import { COOKIE_NAME, COOKIE_OPTIONS } from "@/lib/constants";
 
 /**
  * Logs user out by clearing authentication cookie

@@ -1,5 +1,5 @@
-import * as jose from "jose"
-import { COOKIE_NAME, JWT_SECRET } from "@/constants/constants";
+import { COOKIE_NAME, JWT_SECRET } from "@/lib/constants";
+import * as jose from "jose";
 
 /**
  * Validates user session by verifying JWT from cookie

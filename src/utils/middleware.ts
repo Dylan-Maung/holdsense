@@ -1,5 +1,5 @@
+import { COOKIE_NAME, JWT_SECRET } from "@/lib/constants";
 import * as jose from "jose";
-import { COOKIE_NAME, JWT_SECRET } from "@/constants/constants";
 import { AuthUser } from "../context/auth";
 
 /**

@@ -1,10 +1,11 @@
-import * as React from "react";
-import { AuthError, makeRedirectUri, useAuthRequest, AuthRequestConfig, DiscoveryDocument, exchangeCodeAsync} from "expo-auth-session"
-import * as WebBrowser from "expo-web-browser"
-import { BASE_URL, TOKEN_KEY_NAME } from "@/constants/constants";
-import { Platform } from "react-native";
+import { BASE_URL, TOKEN_KEY_NAME } from "@/lib/constants";
+import { AuthError, AuthRequestConfig, DiscoveryDocument, exchangeCodeAsync, makeRedirectUri, useAuthRequest } from "expo-auth-session";
+import * as WebBrowser from "expo-web-browser";
 import * as jose from "jose";
+import * as React from "react";
+import { Platform } from "react-native";
 import { tokenCache } from "../utils/cache";
+import { useRouter } from "expo-router";
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -48,6 +49,7 @@ export const AuthProvider = ({ children }: {children: React.ReactNode }) => {
     const [request, response, promptAsync] = useAuthRequest(config, discovery);
     const isWeb = Platform.OS === "web"
     const [accessToken, setAccessToken] = React.useState<string | null>(null);
+    const router = useRouter();
 
     React.useEffect(() => {
         handleResponse();
@@ -122,6 +124,7 @@ export const AuthProvider = ({ children }: {children: React.ReactNode }) => {
                     if (sessionResponse.ok) {
                         const sessionData = await sessionResponse.json();
                         setUser(sessionData as AuthUser);
+                        router.replace("/(protected)/(mainTabs)/home");
                     }
                 } else {
                     // Native (mobile)
@@ -134,6 +137,7 @@ export const AuthProvider = ({ children }: {children: React.ReactNode }) => {
 
                     const decoded = jose.decodeJwt(accessToken);
                     setUser(decoded as AuthUser);
+                    router.replace("/(protected)/(mainTabs)/home");
                 }
             } catch(e) {
                 console.log(e)
@@ -158,6 +162,7 @@ export const AuthProvider = ({ children }: {children: React.ReactNode }) => {
             console.log(e);
         }
     };
+
     const signOut = async () => {
         if (isWeb) {
             try {
@@ -173,7 +178,7 @@ export const AuthProvider = ({ children }: {children: React.ReactNode }) => {
         }
 
         setUser(null);
-        
+
     };
 
     const fetchWithAuth = async (url: string, options: RequestInit) => {

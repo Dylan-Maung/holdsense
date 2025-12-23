@@ -1,4 +1,4 @@
-import { APP_SCHEME, BASE_URL } from "@/constants/constants";
+import { APP_SCHEME, BASE_URL } from "@/lib/constants";
 
 /**
  * OAuth callback - receives auth code from Google and redirects to the appropriate platform

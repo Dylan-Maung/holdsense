@@ -50,7 +50,7 @@ Scan QR code with Expo Go app to run on your device.
 
 ## 🙏 Acknowledgments
 
-- OAuth authentication implementation based on [Expo OAuth tutorial](https://www.youtube.com/watch?v=V2YdhR1hVNw)
+- OAuth authentication implementation based on Expo OAuth tutorial
   - Tutorial: https://www.youtube.com/watch?v=V2YdhR1hVNw
   - Code: https://github.com/betomoedano/expo-oauth-example
 ```
