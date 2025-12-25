@@ -2,7 +2,7 @@
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
     "strict": true,
-    "lib": ["ES2022"],  // Add this line
+    "lib": ["ES2022"],
     "paths": {
       "@/*": [
         "./*"

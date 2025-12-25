@@ -6,12 +6,12 @@ import * as React from "react";
 import { Platform } from "react-native";
 import { tokenCache } from "../utils/cache";
 import { useRouter } from "expo-router";
+import { getUserProfile } from "../services/userService";
 
 WebBrowser.maybeCompleteAuthSession();
 
 export type AuthUser = {
-    id: string;
-    sub?: string;
+    sub: string;
     email: string;
     name: string;
     picture?: string;
@@ -26,8 +26,10 @@ const AuthContext = React.createContext({
     user: null as AuthUser | null,
     signIn: () => {},
     signOut: () => {},
+    setOnboarded: (value: boolean) => {},
     fetchWithAuth: async (url: string, options: RequestInit) => Promise.resolve(new Response()),
     isLoading: false,
+    onboarded: false,
     error: null as AuthError | null,
 });
 
@@ -45,6 +47,7 @@ const discovery: DiscoveryDocument = {
 export const AuthProvider = ({ children }: {children: React.ReactNode }) => {
     const [user, setUser] = React.useState<AuthUser | null>(null);
     const [isLoading, setIsLoading] = React.useState(false);
+    const [onboarded, setOnboarded] = React.useState(false);
     const [error, setError] = React.useState<AuthError | null>(null);
     const [request, response, promptAsync] = useAuthRequest(config, discovery);
     const isWeb = Platform.OS === "web"
@@ -122,9 +125,19 @@ export const AuthProvider = ({ children }: {children: React.ReactNode }) => {
                     });
 
                     if (sessionResponse.ok) {
-                        const sessionData = await sessionResponse.json();
+                        const sessionData = await sessionResponse.json() as AuthUser;
                         setUser(sessionData as AuthUser);
-                        router.replace("/(protected)/(mainTabs)/home");
+                        
+                        let profile = await getUserProfile(sessionData.sub);
+                        console.log("Profile is: ", profile);
+
+                        // Onboarding first time user
+                        if (!profile) {
+                            router.replace('/onboarding');
+                        } else {
+                            setOnboarded(true);
+                            setTimeout(() => router.replace('/(mainTabs)/home'), 10);
+                        }
                     }
                 } else {
                     // Native (mobile)
@@ -137,7 +150,6 @@ export const AuthProvider = ({ children }: {children: React.ReactNode }) => {
 
                     const decoded = jose.decodeJwt(accessToken);
                     setUser(decoded as AuthUser);
-                    router.replace("/(protected)/(mainTabs)/home");
                 }
             } catch(e) {
                 console.log(e)
@@ -178,7 +190,7 @@ export const AuthProvider = ({ children }: {children: React.ReactNode }) => {
         }
 
         setUser(null);
-
+        router.replace('/login')
     };
 
     const fetchWithAuth = async (url: string, options: RequestInit) => {
@@ -224,8 +236,10 @@ export const AuthProvider = ({ children }: {children: React.ReactNode }) => {
                 user,
                 signIn,
                 signOut,
+                setOnboarded,
                 fetchWithAuth,
                 isLoading,
+                onboarded,
                 error,
              }}
         >

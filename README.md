@@ -53,6 +53,10 @@ Scan QR code with Expo Go app to run on your device.
 - OAuth authentication implementation based on Expo OAuth tutorial
   - Tutorial: https://www.youtube.com/watch?v=V2YdhR1hVNw
   - Code: https://github.com/betomoedano/expo-oauth-example
+
+- Route protection structure based on Expo Router Auth Flow:
+  - Tutorial: https://www.youtube.com/watch?v=yNaOaR2kIa0
+  - Code: https://github.com/kadikraman/expo-router-example/tree/main/5-auth
 ```
 
 ## 📄 License
