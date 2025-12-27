@@ -1,16 +1,16 @@
 import { createContext, useState, useContext } from 'react';
-import { onBoardingForm } from '../types/onboarding';
+import { OnboardingForm } from '../types/onboarding';
 
 type OnboardingContextType = {
-    formData: onBoardingForm;
-    updateFormData: (data: Partial<onBoardingForm>) => void;
+    formData: OnboardingForm;
+    updateFormData: (data: Partial<OnboardingForm>) => void;
 };
 
 const OnboardingContext = createContext<OnboardingContextType | undefined>(undefined);
 
 export const OnboardingProvider = ({ children }: {children: React.ReactNode })  => {
-    const [formData, setFormData] = useState<onBoardingForm>({});
-    const updateFormData = (data: Partial<onBoardingForm>) => {
+    const [formData, setFormData] = useState<OnboardingForm>({});
+    const updateFormData = (data: Partial<OnboardingForm>) => {
         setFormData(prev => ({ ...prev, ...data }));
     }
     return (

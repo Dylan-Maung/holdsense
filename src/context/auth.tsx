@@ -7,6 +7,7 @@ import { Platform } from "react-native";
 import { tokenCache } from "../utils/cache";
 import { useRouter } from "expo-router";
 import { getUserProfile } from "../services/userService";
+import { UserProfile } from "../types/userProfile";
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -24,6 +25,8 @@ export type AuthUser = {
 }
 const AuthContext = React.createContext({
     user: null as AuthUser | null,
+    profile: null as UserProfile | null,
+    setProfile: (profile: UserProfile | null) => {},
     signIn: () => {},
     signOut: () => {},
     setOnboarded: (value: boolean) => {},
@@ -46,6 +49,7 @@ const discovery: DiscoveryDocument = {
 
 export const AuthProvider = ({ children }: {children: React.ReactNode }) => {
     const [user, setUser] = React.useState<AuthUser | null>(null);
+    const [profile, setProfile] = React.useState<UserProfile | null>(null);
     const [isLoading, setIsLoading] = React.useState(false);
     const [onboarded, setOnboarded] = React.useState(false);
     const [error, setError] = React.useState<AuthError | null>(null);
@@ -74,6 +78,7 @@ export const AuthProvider = ({ children }: {children: React.ReactNode }) => {
                         
                         const profile = await getUserProfile(userData.sub);
                         setOnboarded(!!profile);
+                        setProfile(profile);
                     }
                 } else {
                     // Native (mobile)
@@ -87,6 +92,7 @@ export const AuthProvider = ({ children }: {children: React.ReactNode }) => {
 
                             const profile = await getUserProfile(decoded.sub);
                             setOnboarded(!!profile);
+                            setProfile(profile);
                         } catch (e) {
                             console.log(e);
                         }
@@ -135,6 +141,7 @@ export const AuthProvider = ({ children }: {children: React.ReactNode }) => {
                         setUser(sessionData as AuthUser);
                         
                         let profile = await getUserProfile(sessionData.sub);
+                        setProfile(profile);
                         console.log("Profile is: ", profile);
 
                         // Onboarding first time user
@@ -244,6 +251,8 @@ export const AuthProvider = ({ children }: {children: React.ReactNode }) => {
         <AuthContext.Provider 
             value={{
                 user,
+                profile,
+                setProfile,
                 signIn,
                 signOut,
                 setOnboarded,

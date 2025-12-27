@@ -1,4 +1,4 @@
-export interface onBoardingForm {
+export interface OnboardingForm {
     // onboarding/profile.tsx
     username?: string;
     bio?: string;

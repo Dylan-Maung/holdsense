@@ -4,12 +4,12 @@ import { router } from 'expo-router'
 import * as ImagePicker from 'expo-image-picker';
 import { useOnboarding } from '@/src/context/onboardingContext';
 import { useAuth } from '@/src/context/auth';
-import { createUserProfile } from '@/src/services/userService';
+import { createUserProfile, getUserProfile } from '@/src/services/userService';
 
 export default function ProfilePicture() {
   const { formData, updateFormData } = useOnboarding();
   const [profilePicture, setProfilePicture] = useState<string | null>(null);
-  const { user, setOnboarded } = useAuth();
+  const { user, setOnboarded, setProfile} = useAuth();
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -26,7 +26,7 @@ export default function ProfilePicture() {
     }
   };
 
-  // Store new user in db and set onboardedFlag to true
+  // Store new user in db and set onboarded flag to true
   const handleFinish = async () => {
     await createUserProfile(profilePicture, {
       id: user!.sub,
@@ -41,7 +41,9 @@ export default function ProfilePicture() {
     });
 
     setOnboarded(true);
-    setTimeout(() => router.replace('/(mainTabs)/home'), 10);
+    const newProfile = await getUserProfile(user!.sub)
+    setProfile(newProfile);
+    router.replace('/(mainTabs)/home');
   };
   
   return (
