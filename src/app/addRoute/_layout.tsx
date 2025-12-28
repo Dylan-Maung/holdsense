@@ -1,7 +1,10 @@
+import { RouteDataProvider } from "@/src/context/routeContext";
 import { Stack } from "expo-router";
 
 export default function AddRouteLayout() {
     return (
-        <Stack screenOptions={{ headerShown: false }}/>
+        <RouteDataProvider>
+            <Stack screenOptions={{ headerShown: false }}/>
+        </RouteDataProvider>
     )
 }

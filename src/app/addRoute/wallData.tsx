@@ -6,7 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 export default function WallData() {
 
     const handleNext = () => {
-        router.push('/(mainTabs)/home')
+        router.replace('/(mainTabs)/home')
     };
 
     return (

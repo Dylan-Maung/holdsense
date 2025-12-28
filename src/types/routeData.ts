@@ -1,13 +1,13 @@
 import { Hold } from './hold';
 
-export interface Route {
+export interface RouteData {
     // Required
     id: string;
     userId: string;
     grade: string;
     gym: string;
     date: string;
-    status: 'Flash' | 'Onsight' | 'Project' | 'Sent';
+    status: 'Flash' | 'Onsight' | 'Project' | 'Redpoint';
     quality: number;
     holds: Hold[];
     fullRouteImages?: string[]; // sequence of array used to stitch full route together
@@ -25,3 +25,6 @@ export interface Route {
     // Optional
     name?: string;
 }
+
+// Use for Incremental Form Completion
+export type RouteDataForm = Partial<RouteData>;
