@@ -10,24 +10,23 @@ export default function routeInfo() {
     const { formData, updateFormData } = useRouteDataForm();
     const [gym, setGym] = useState(formData.gym || '');
     const [grade, setGrade] = useState(formData.grade || '');
-    const [date, setDate] = useState(
-        formData.date ? new Date(formData.date) : new Date()
-    );
+    const [date, setDate] = useState(formData.date ? new Date(formData.date) : new Date());
     const [status, setStatus] = useState(formData.status || '');
     const [quality, setQuality] = useState(formData.quality || '');
     const [attempts, setAttempts] = useState(formData.attempts?.toString() || '');
     const [notes, setNotes] = useState(formData.notes || '');
     const [setter, setSetter] = useState(formData.setter || '');
-    const boulderGrades = [
-        'V0', 'V1', 'V2', 'V3', 'V4', 'V5', 'V6', 'V7', 'V8', 'V9', 'V10', 'V11', 
-        'V12', 'V13', 'V14', 'V15', 'V16', 'V17'
-    ];
-    const boulderStatuses = ['Flash', 'Onsight', 'Project', 'Redpoint']
-    const boulderRatings = ['1', '1.5', '2', '2.5', '3', '3.5', '4', '4.5', '5']
     const [gradeModalVisible, setGradeModalVisible] = useState(false);
     const [statusModalVisible, setStatusModalVisible] = useState(false);
     const [qualityModalVisible, setQualityModalVisible] = useState(false);
     const [dateModalVisible, setDateModalVisible] = useState(false);
+
+    const boulderStatuses = ['Flash', 'Onsight', 'Project', 'Redpoint']
+    const boulderRatings = ['1', '1.5', '2', '2.5', '3', '3.5', '4', '4.5', '5']
+    const boulderGrades = [
+        'V0', 'V1', 'V2', 'V3', 'V4', 'V5', 'V6', 'V7', 'V8', 'V9', 'V10', 'V11', 
+        'V12', 'V13', 'V14', 'V15', 'V16', 'V17'
+    ];
     
     const handleNext = () => {
         updateFormData({ 
@@ -142,7 +141,7 @@ export default function routeInfo() {
                     </View>
                 </Modal>
 
-                <Button title="Continue to Wall Data" onPress={handleNext}/>
+                <Button title="Add Hold Info" onPress={handleNext}/>
             </View>
         </SafeAreaView>
     )

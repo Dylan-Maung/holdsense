@@ -24,10 +24,12 @@ export default function Home() {
 
         <View className='flex flex-row justify-between items-center mb-4'>
           <Text className='text-white'>Routes</Text>
+
           <View className='flex flex-row items-center justify-end gap-4 w-1/2'>
             <Pressable onPress={() => router.push('/addRoute')}>
               <MaterialIcons name="add-circle" size={28} color="#3b82f6" />
             </Pressable>
+            
             <Pressable onPress={() => console.log('Clicked!')}>
               <Text className='text-gray-400'>View All</Text>
             </Pressable>
