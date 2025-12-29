@@ -7,7 +7,7 @@ export interface Hold {
     holdType: 'Jug' | 'Crimp' | 'Sloper' | 'Pinch' | 'Volume' | 'Pocket';
     dualTexture: boolean;
     orientation: number;
-    position: { x: number, y: number, z: number}
+    position: { x: number, y: number, z: number, height: number, width: number}
 
     // Optional
     color?: string;

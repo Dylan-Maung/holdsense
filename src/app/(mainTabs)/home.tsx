@@ -38,12 +38,12 @@ export default function Home() {
 
         <View className='h-1/5'>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            {/* <RouteCard />
             <RouteCard />
             <RouteCard />
             <RouteCard />
             <RouteCard />
-            <RouteCard />
-            <RouteCard />
+            <RouteCard /> */}
           </ScrollView>
         </View>
       </View>

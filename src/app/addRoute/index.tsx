@@ -16,6 +16,7 @@ export default function routeInfo() {
     const [attempts, setAttempts] = useState(formData.attempts?.toString() || '');
     const [notes, setNotes] = useState(formData.notes || '');
     const [setter, setSetter] = useState(formData.setter || '');
+    const [color, setColor] = useState(formData.setter || '');
     const [gradeModalVisible, setGradeModalVisible] = useState(false);
     const [statusModalVisible, setStatusModalVisible] = useState(false);
     const [qualityModalVisible, setQualityModalVisible] = useState(false);
@@ -37,7 +38,8 @@ export default function routeInfo() {
             quality: Number(quality),
             attempts: Number(attempts),
             notes,
-            setter
+            setter,
+            color,
         })
         router.push('/addRoute/holdData')
     };
@@ -55,6 +57,11 @@ export default function routeInfo() {
                 <View className='flex flex-row mb-4 items-center justify-center'>
                     <Text className='text-white'>Setter: </Text>
                     <TextInput className='text-white' onChangeText={setSetter} value={setter} placeholder="Alexander Megos"/>
+                </View>
+
+                <View className='flex flex-row mb-4 items-center justify-center'>
+                    <Text className='text-white'>Color: </Text>
+                    <TextInput className='text-white' onChangeText={setColor} value={color} placeholder="Purple"/>
                 </View>
 
                 <PickerModal 

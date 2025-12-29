@@ -32,10 +32,10 @@ export default function HoldData() {
     };
 
     return (
-        <SafeAreaView className='flex-1 bg-black'>
+        <SafeAreaView className='flex-1 bg-black p-4'>
             <View className='flex-1 flex-col'>
                 <View className='flex flex-row w-full justify-between items-center mb-4'>
-                    <Text className='text-white'>Holds</Text>
+                    <Text className='text-white font-bold'>Holds</Text>
 
                     <View className='flex flex-row items-center justify-end gap-4 w-1/2'>
                         <Pressable onPress={addHold} className='opacity-100 active:opacity-50'>

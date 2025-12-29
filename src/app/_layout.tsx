@@ -27,7 +27,7 @@ function RootLayoutNav() {
 
       <Stack.Protected guard={user !== null && onboarded}>
         <Stack.Screen name="(mainTabs)" options={{ headerShown: false, animation: "none" }} />
-        <Stack.Screen name="addRoute" options={{ animation: "none" }} />
+        <Stack.Screen name="addRoute" options={{ headerShown: false, animation: "none" }} />
       </Stack.Protected>
     </Stack>
   )

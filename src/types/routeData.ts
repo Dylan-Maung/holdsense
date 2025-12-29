@@ -1,4 +1,5 @@
 import { Hold } from './hold';
+import { Wall } from './wall';
 
 export interface RouteData {
     // Required
@@ -9,21 +10,14 @@ export interface RouteData {
     date: string;
     status: 'Flash' | 'Onsight' | 'Project' | 'Redpoint';
     quality: number;
-    holds: Hold[];
-    fullRouteImages?: string[]; // sequence of array used to stitch full route together
     attempts: number;
+    color: string;
+    holds: Hold[];
+    fullRouteImages: Wall[]; // sequence of array used to stitch full route together
 
     // Optional
     notes?: string;
     setter?: string;
-
-    // wall info
-    type: 'Overhang' | 'Slab' | 'Vertical'
-    topOut: boolean;
-    angle: number; 
-
-    // Optional
-    name?: string;
 }
 
 // Use for Incremental Form Completion

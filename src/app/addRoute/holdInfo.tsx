@@ -33,7 +33,7 @@ export default function holdInfo() {
             holdType: holdType as 'Jug' | 'Crimp' | 'Sloper' | 'Pinch' | 'Volume' | 'Pocket',
             dualTexture: dualTexture,
             orientation: Number(orientation),
-            position: { x: 0, y: 0, z: 0 },
+            position: { x: 0, y: 0, z: 0, height:0, width:0 },
             color: color,
         };
 
