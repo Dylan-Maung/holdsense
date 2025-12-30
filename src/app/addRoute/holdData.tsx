@@ -1,5 +1,5 @@
 import { View, Text, Button, Alert, Pressable, ScrollView } from 'react-native'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { useRouteDataForm } from '@/src/context/routeContext';
@@ -9,6 +9,15 @@ import HoldCard from '@/src/components/holdCard';
 
 export default function HoldData() {
     const { formData } = useRouteDataForm();
+
+    useEffect(() => {
+        (async () => {
+            const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+            if (status !== 'granted') {
+                Alert.alert('Permission needed', 'We need access to your photos to document routes');
+            }
+        })();
+    }, []);
     
     const addHold = async () => {
         let result = await ImagePicker.launchImageLibraryAsync({

@@ -27,7 +27,7 @@ export default function WallData() {
     };
 
     const handleNext = () => {
-        router.replace('/(mainTabs)/home')
+        router.replace('/addRoute/holdPositions')
     };
 
     return (

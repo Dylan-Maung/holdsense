@@ -10,7 +10,11 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.holdsense"
+      "bundleIdentifier": "com.holdsense",
+      "infoPlist": {
+        "NSPhotoLibraryUsageDescription": "This app needs access to your photo library to select images of climbing routes and holds.",
+        "NSCameraUsageDescription": "This app needs access to your camera to take photos of climbing routes and holds."
+      }
     },
     "android": {
       "adaptiveIcon": {
