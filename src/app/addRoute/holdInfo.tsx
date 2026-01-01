@@ -20,9 +20,9 @@ export default function holdInfo() {
     const [tagModalVisible, setTagModalVisible] = useState(false);
     const [holdTypeModalVisible, setHoldTypeModalVisible] = useState(false);
 
-    const holdRestrictions = ['Hand', 'Foot', 'Dual'];
-    const holdTags = ['Start', 'Finish', 'Middle'];
-    const holdTypes = ['Jug', 'Crimp', 'Sloper', 'Pinch', 'Volume', 'Pocket'];
+    const holdRestrictions = ['Dual', 'Hand', 'Foot'];
+    const holdTags = ['Middle', 'Start', 'Finish'];
+    const holdTypes = ['Jug', 'Crimp', 'Sloper', 'Pinch', 'Volume', 'Pocket', 'Edge', 'Smear'];
 
     const addHold  = () => {
         const newHold: Hold = {
@@ -30,7 +30,7 @@ export default function holdInfo() {
             imageUri: imageUri as string,
             usedBy: usedBy as 'Hand' | 'Foot' | 'Dual',
             tag: tag as 'Start' | 'Finish' | 'Middle',
-            holdType: holdType as 'Jug' | 'Crimp' | 'Sloper' | 'Pinch' | 'Volume' | 'Pocket',
+            holdType: holdType as 'Jug' | 'Crimp' | 'Sloper' | 'Pinch' | 'Volume' | 'Pocket' | 'Edge' | 'Smear',
             dualTexture: dualTexture,
             orientation: Number(orientation),
             position: { x: 0, y: 0, z: 0, height:0, width:0 },

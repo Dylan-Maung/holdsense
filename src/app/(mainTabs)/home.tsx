@@ -1,13 +1,17 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Pressable, Text, View, ScrollView } from 'react-native';
 import { useAuth } from '../../context/auth';
 import RouteCard from '@/src/components/routeCard';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { router } from 'expo-router';
+import { getUserRoutes } from '@/src/services/routeService';
+import { RouteData } from '@/src/types/routeData';
 
 export default function Home() {
-  const { profile } = useAuth();
+  const { profile, user } = useAuth();
+  const [loading, setLoading] = useState(true);
+  const [userRoutes, setUserRoutes] = useState<RouteData[]>([]);
 
   if (!profile) {
     return (
@@ -16,6 +20,15 @@ export default function Home() {
       </View>
     );
   }
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      const routes = await getUserRoutes(user!.sub);
+      setUserRoutes(routes);
+      setLoading(false);
+    }
+    fetchProfile();
+  }, [user]);
 
   return (
     <SafeAreaView className='flex-1 bg-black' edges={['top']}>
@@ -38,12 +51,9 @@ export default function Home() {
 
         <View className='h-1/5'>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            {/* <RouteCard />
-            <RouteCard />
-            <RouteCard />
-            <RouteCard />
-            <RouteCard />
-            <RouteCard /> */}
+            {userRoutes.map((route) => (
+              <RouteCard key={route.id} routeData={route} />
+            ))}
           </ScrollView>
         </View>
       </View>

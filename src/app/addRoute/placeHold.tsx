@@ -8,7 +8,7 @@ import { Hold } from '@/src/types/hold';
 import Slider from '@react-native-community/slider';
 
 export default function placeHold() {
-    const { formData,  placedHolds, setPlacedHolds } = useRouteDataForm();
+    const { formData, updateFormData,  placedHolds, setPlacedHolds } = useRouteDataForm();
     const [selectedHold, setSelectedHold] = useState<Hold | null>(null);
     const [selectedPlacedHold, setSelectedPlacedHold] = useState<Hold | null>(null);
     const [imageDimensions, setImageDimensions] = useState({ width: 0, height: 0 });
@@ -16,6 +16,10 @@ export default function placeHold() {
     const GRID_COLS = 10;
     const GRID_ROWS = 10;
     const currWall = formData.fullRouteImages?.find(w => w.id === wallId);
+
+    const remainingHolds = formData.holds?.filter(
+        h => !placedHolds.some(p => p.id === h.id)
+    ) || [];
 
     const updateHoldSize = (hold: Hold | null, size: number) => {
         if (!hold) {
@@ -53,6 +57,21 @@ export default function placeHold() {
     };
 
     const placeHolds = () => {
+        // Update formData.holds with positions from placedHolds
+        const updatedHolds = formData.holds?.map(hold => {
+            const placedHold = placedHolds.find(p => p.id === hold.id);
+            
+            if (placedHold) {
+                return {
+                    ...hold,
+                    position: placedHold.position
+                };
+            }
+            
+            return hold;
+        });
+        
+        updateFormData({ holds: updatedHolds });
         router.back();
     }
 
@@ -61,32 +80,37 @@ export default function placeHold() {
             <Text className='text-white text-center mb-2'>Place holds on wall</Text>
         
             <View className='flex-1 px-4'>
-                <Pressable 
-                    onPress={(event) => {
-                        const { locationX, locationY } = event.nativeEvent;
+            <Pressable 
+                onPress={(event) => {
+                    const { locationX, locationY } = event.nativeEvent;
+                    
+                    if (selectedHold && imageDimensions.width > 0) {
+                        const hold = formData.holds?.find(h => h === selectedHold);
+                        if (!hold) return;
                         
-                        if (selectedHold && imageDimensions.width > 0) {
-                            const hold = formData.holds?.find(h => h === selectedHold);
-                            if (!hold) return;
-                            
-                            const DEFAULT_SIZE = 50;
-                            const placement: Hold = {
-                                ...hold,
-                                position: { 
-                                    x: (locationX / imageDimensions.width) - (DEFAULT_SIZE / imageDimensions.width / 2), 
-                                    y: (locationY / imageDimensions.height) - (DEFAULT_SIZE / imageDimensions.height / 2), 
-                                    z: 0,
-                                    width: DEFAULT_SIZE / imageDimensions.width,   
-                                    height: DEFAULT_SIZE / imageDimensions.height
-                                }
-                            };
-                            
-                            setPlacedHolds(prev => [...prev, placement]);
-                            setSelectedHold(null);
-                        }
-                    }}
-                    style={{ flex: 1 }}
-                >
+                        const DEFAULT_SIZE = 50;
+                        const normalizedX = locationX / imageDimensions.width;
+                        const normalizedY = locationY / imageDimensions.height;
+                        const wallAngle = currWall?.angle || 0;
+                        const positionZ = (1 - normalizedY) * Math.tan(wallAngle * Math.PI / 180) * 0.5;
+                        
+                        const placement: Hold = {
+                            ...hold,
+                            position: { 
+                                x: normalizedX - (DEFAULT_SIZE / imageDimensions.width / 2), 
+                                y: normalizedY - (DEFAULT_SIZE / imageDimensions.height / 2), 
+                                z: positionZ,
+                                width: DEFAULT_SIZE / imageDimensions.width,   
+                                height: DEFAULT_SIZE / imageDimensions.height
+                            }
+                        };
+                        
+                        setPlacedHolds(prev => [...prev, placement]);
+                        setSelectedHold(null);
+                    }
+                }}
+                style={{ flex: 1 }}
+            >
                     <View className='flex-1 border border-white rounded-lg mb-4 overflow-hidden'>
                         <Image
                             source={{ uri: currWall?.imageUri }} 
@@ -151,7 +175,7 @@ export default function placeHold() {
                         >
                             {selectedPlacedHold && (
                                 <View className='flex-1 items-center justify-end'>
-                                    <View className="w-full rounded-lg">
+                                    <View className="w-full rounded-lg pb-8 bg-black">
                                         <View className="bg-black">
                                             <Text className='text-white text-lg mb-4'>Adjust Hold Size</Text>
                                             <Slider
@@ -181,7 +205,7 @@ export default function placeHold() {
     
                 <View className='h-32 mb-4'>
                     <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                        {formData.holds?.map((hold) => (
+                        {remainingHolds.map((hold) => (
                             <Pressable key={hold.id} className='mr-3' onPress={() => {setSelectedHold(hold)}}>
                                 <View className='w-20 items-center'>
                                 <View className={`w-20 h-20 rounded-lg mb-1 overflow-hidden ${

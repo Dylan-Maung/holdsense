@@ -21,8 +21,8 @@ export default function HoldData() {
     
     const addHold = async () => {
         let result = await ImagePicker.launchImageLibraryAsync({
-            allowsEditing: true,
-            quality: 1,
+            allowsEditing: false,
+            quality: 0.2,
             mediaTypes: 'images',
         });
 

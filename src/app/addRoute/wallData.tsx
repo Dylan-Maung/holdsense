@@ -11,8 +11,8 @@ export default function WallData() {
     const { formData } = useRouteDataForm();
     const addWall = async () => {
         let result = await ImagePicker.launchImageLibraryAsync({
-            allowsEditing: true,
-            quality: 1,
+            allowsEditing: false,
+            quality: 0.2,
         });
 
         if (!result.canceled) {

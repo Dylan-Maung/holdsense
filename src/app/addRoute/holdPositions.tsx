@@ -1,16 +1,48 @@
-import { View, Text, ScrollView, Pressable, Button, Image } from 'react-native'
+import { View, Text, ScrollView, Pressable, Button, Image, Alert } from 'react-native'
 import React, { useState } from 'react'
 import { useRouteDataForm } from '@/src/context/routeContext'
 import { router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { createRoute } from '@/src/services/routeService';
+import { RouteData } from '@/src/types/routeData';
+import uuid from 'react-native-uuid';
+import { useAuth } from '@/src/context/auth';
 
 export default function holdPositions() {
   const { formData, placedHolds = [] } = useRouteDataForm();
+  const { user } = useAuth();
   const remainingCount = (formData.holds?.length || 0) - (placedHolds.length || 0);
 
-  const addRoute = () => {
-    router.replace('/(mainTabs)/home')
-  };
+  const addRoute = async () => {
+    try {
+        if (!formData.holds || !formData.fullRouteImages || !formData.grade || !formData.gym || (remainingCount !== 0)) {
+            Alert.alert('Error', 'Missing required route information');
+            return;
+        }
+        
+        const routeData: RouteData = {
+            id: uuid.v4().toString(),
+            userId: user!.sub,
+            grade: formData.grade,
+            gym: formData.gym,
+            date: formData.date || new Date().toISOString().split('T')[0],
+            status: formData.status || 'Project',
+            quality: formData.quality || 0,
+            attempts: formData.attempts || 1,
+            color: formData.color || '',
+            holds: formData.holds,
+            fullRouteImages: formData.fullRouteImages,
+            notes: formData.notes,
+            setter: formData.setter,
+        };
+        
+        await createRoute(routeData.holds, routeData.fullRouteImages, routeData);
+        router.replace('/(mainTabs)/home');
+    } catch (error) {
+        console.error('Error creating route:', error);
+        Alert.alert('Error', 'Failed to save route');
+    }
+};
 
   return (
     <SafeAreaView className='flex-1 bg-black p-4'>
