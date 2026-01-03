@@ -5,12 +5,11 @@ import RouteCard from '@/src/components/routeCard';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { router } from 'expo-router';
-import { getUserRoutes } from '@/src/services/routeService';
+import { getRecentUserRoutes } from '@/src/services/routeService';
 import { RouteData } from '@/src/types/routeData';
 
 export default function Home() {
   const { profile, user } = useAuth();
-  const [loading, setLoading] = useState(true);
   const [userRoutes, setUserRoutes] = useState<RouteData[]>([]);
 
   if (!profile) {
@@ -22,12 +21,12 @@ export default function Home() {
   }
 
   useEffect(() => {
-    const fetchProfile = async () => {
-      const routes = await getUserRoutes(user!.sub);
+    const fetchRoutes = async () => {
+      const routes = await getRecentUserRoutes(user!.sub);
       setUserRoutes(routes);
-      setLoading(false);
     }
-    fetchProfile();
+    
+    fetchRoutes();
   }, [user]);
 
   return (
@@ -52,7 +51,12 @@ export default function Home() {
         <View className='h-1/5'>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             {userRoutes.map((route) => (
-              <RouteCard key={route.id} routeData={route} />
+                <Pressable 
+                  key={route.id} 
+                  onPress={() => router.push(`/route/${route.id}`)}
+                >
+                  <RouteCard routeData={route} />
+                </Pressable>
             ))}
           </ScrollView>
         </View>

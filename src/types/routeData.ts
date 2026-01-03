@@ -9,7 +9,6 @@ export interface RouteData {
     gym: string;
     date: string;
     status: 'Flash' | 'Onsight' | 'Project' | 'Redpoint';
-    quality: number;
     attempts: number;
     color: string;
     holds: Hold[];
@@ -18,6 +17,7 @@ export interface RouteData {
     // Optional
     notes?: string;
     setter?: string;
+    quality?: number;
 }
 
 // Use for Incremental Form Completion

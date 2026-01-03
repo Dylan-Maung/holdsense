@@ -1,10 +1,11 @@
 import { View, Text, Button, TextInput, Modal, Pressable } from 'react-native'
-import React, { useState } from 'react'
+import React, { isValidElement, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { router } from 'expo-router';
 import { useRouteDataForm } from '@/src/context/routeContext';
 import DateTimePicker from '@react-native-community/datetimepicker'
 import PickerModal from '@/src/components/ui/pickerModal';
+import PrimaryButton from '@/src/components/ui/primaryButton';
 
 export default function routeInfo() {
     const { formData, updateFormData } = useRouteDataForm();
@@ -43,6 +44,8 @@ export default function routeInfo() {
         })
         router.push('/addRoute/holdData')
     };
+
+    const validInput = grade && gym && date && status && attempts && color;
 
     return (
         <SafeAreaView className='flex-1 bg-black'>
@@ -147,8 +150,12 @@ export default function routeInfo() {
                         </View>
                     </View>
                 </Modal>
-
-                <Button title="Add Hold Info" onPress={handleNext}/>
+                
+                <PrimaryButton
+                    title="Add Route Info"
+                    onPress={handleNext}
+                    disabled={!validInput}
+                />
             </View>
         </SafeAreaView>
     )
