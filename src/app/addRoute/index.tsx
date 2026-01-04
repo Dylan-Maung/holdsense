@@ -1,11 +1,13 @@
-import { View, Text, Button, TextInput, Modal, Pressable } from 'react-native'
-import React, { isValidElement, useState } from 'react'
+import { View, Text, Modal, Pressable, Alert } from 'react-native'
+import React, { useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { router } from 'expo-router';
 import { useRouteDataForm } from '@/src/context/routeContext';
 import DateTimePicker from '@react-native-community/datetimepicker'
 import PickerModal from '@/src/components/ui/pickerModal';
 import PrimaryButton from '@/src/components/ui/primaryButton';
+import FormHeader from '@/src/components/ui/formHeader';
+import InputField from '@/src/components/ui/inputField';
 
 export default function routeInfo() {
     const { formData, updateFormData } = useRouteDataForm();
@@ -31,6 +33,23 @@ export default function routeInfo() {
     ];
     
     const handleNext = () => {
+        // Input Validation: 
+        const errors = [];
+        if (color && !/^[a-zA-Z\s]+$/.test(color)) {
+            errors.push('Color should only contain letters');
+        }
+        if (attempts && (isNaN(Number(attempts)) || Number(attempts) < 1)) {
+            errors.push('Attempts must be a positive number');
+        }
+
+        if (errors.length > 0) {
+            Alert.alert(
+                'Please fix the following:', 
+                errors.map((e, i) => `${i + 1}. ${e}`).join('\n')
+            );
+            return;
+        }
+
         updateFormData({ 
             gym,
             grade,
@@ -49,24 +68,31 @@ export default function routeInfo() {
 
     return (
         <SafeAreaView className='flex-1 bg-black'>
-            <View className='flex-1 justify-center items-center'>
-                <Text className='text-white mb-2'>Boulder Info</Text>
+            <View className='flex-1'>
+                <FormHeader step={1} totalSteps={4} title="Boulder Info" />
 
-                <View className='flex flex-row mb-4 items-center justify-center'>
-                    <Text className='text-white'>Gym: </Text>
-                    <TextInput className='text-white' onChangeText={setGym} value={gym} placeholder="Dogpatch Boulders"/>
-                </View>
+                <InputField
+                    label="Gym"
+                    value={gym}
+                    onChangeText={setGym}
+                    placeholder="Dogpatch Boulders"
+                />
 
-                <View className='flex flex-row mb-4 items-center justify-center'>
-                    <Text className='text-white'>Setter: </Text>
-                    <TextInput className='text-white' onChangeText={setSetter} value={setter} placeholder="Alexander Megos"/>
-                </View>
+                <InputField
+                    label="Setter"
+                    optional
+                    value={setter}
+                    onChangeText={setSetter}
+                    placeholder="Alexander Megos"
+                />
 
-                <View className='flex flex-row mb-4 items-center justify-center'>
-                    <Text className='text-white'>Color: </Text>
-                    <TextInput className='text-white' onChangeText={setColor} value={color} placeholder="Purple"/>
-                </View>
-
+                <InputField
+                    label="Color"
+                    value={color}
+                    onChangeText={setColor}
+                    placeholder="Purple"
+                />
+                
                 <PickerModal 
                     header="Boulder Grade"
                     selectedValue={grade}
@@ -88,16 +114,13 @@ export default function routeInfo() {
                     placeholder="Select Status"
                     pickerOptions={boulderStatuses}
                 />
-
-                <View className='flex flex-row mb-4 items-center justify-center'>
-                    <Text className='text-white'>Number of Attempts: </Text>
-                    <TextInput className='text-white' onChangeText={setAttempts} value={attempts} placeholder="10"/>
-                </View>
-
-                <View className='flex flex-row mb-4 items-center justify-center'>
-                    <Text className='text-white'>Notes: </Text>
-                    <TextInput className='text-white' onChangeText={setNotes} value={notes} placeholder="The crux was the first move ..."/>
-                </View>
+                
+                <InputField
+                    label="Number of Attempts"
+                    value={attempts}
+                    onChangeText={setAttempts}
+                    placeholder="10"
+                />
 
                 <PickerModal 
                     header="Boulder Quality"
@@ -108,6 +131,17 @@ export default function routeInfo() {
                     onOpen={() => setQualityModalVisible(true)}
                     placeholder="Select Rating"
                     pickerOptions={boulderRatings}
+                    optional
+                />
+
+                <InputField 
+                    label="Notes"
+                    optional
+                    value={notes}
+                    onChangeText={setNotes}
+                    placeholder="The crux was..."
+                    multiline
+                    numberOfLines={3}
                 />
 
                 <View className='flex flex-row mb-4 items-center justify-center'>

@@ -1,4 +1,4 @@
-import { View, Text, Image, Button, TextInput, Switch } from 'react-native'
+import { View, Text, Image, Switch, Alert, Pressable } from 'react-native'
 import React, { useState } from 'react'
 import { useRouteDataForm } from '@/src/context/routeContext';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -6,6 +6,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import PickerModal from '@/src/components/ui/pickerModal';
 import uuid from 'react-native-uuid';
 import { Wall } from '@/src/types/wall';
+import PrimaryButton from '@/src/components/ui/primaryButton';
+import InputField from '@/src/components/ui/inputField';
+import { MaterialIcons } from '@expo/vector-icons';
 
 export default function wallInfo() {
     const { formData, updateFormData } = useRouteDataForm();
@@ -19,7 +22,24 @@ export default function wallInfo() {
 
     const wallTypes = ['Overhang', 'Slab', 'Vertical'];
 
+    
+    const validInput = type && angle;
+
     const addWall  = () => {
+        // Input Validation: 
+        const errors = [];
+        if (angle && !/^-?\d+(\.\d+)?$/.test(angle)) {
+            errors.push('Orientation must be a valid number');
+        }
+
+        if (errors.length > 0) {
+            Alert.alert(
+                'Please fix the following:', 
+                errors.map((e, i) => `${i + 1}. ${e}`).join('\n')
+            );
+            return;
+        }
+
         const newWall: Wall = {
             id: uuid.v4().toString(),
             imageUri: imageUri as string,
@@ -37,9 +57,19 @@ export default function wallInfo() {
     };
 
     return (
-        <SafeAreaView className='flex-1 bg-black items-center' edges={['top']}>
-            <View className='flex h-full w-96 rounded-lg items-center'>
-                <View className='w-full flex-1 border border-white rounded-lg mb-4 items-center'>
+        <SafeAreaView className='flex-1 bg-black' edges={['top']}>
+            <View className='flex-1 p-4'>
+                <View className='flex-row w-full items-center mb-6'>
+                    <Pressable onPress={() => router.back()} className='mr-3'>
+                        <MaterialIcons name="arrow-back-ios" size={24} color="white" />
+                    </Pressable>
+
+                    <View className='absolute left-0 right-0 items-center'>
+                        <Text className='text-white text-2xl font-bold'>Add Wall Info</Text>
+                    </View>
+                </View>
+
+                <View className='w-full h-96 border border-white rounded-lg mb-4 items-center'>
                     <Image 
                         source={{ uri: imageUri as string }} 
                         className='w-full h-full'
@@ -58,13 +88,24 @@ export default function wallInfo() {
                         pickerOptions={wallTypes}
                     />
 
-                    <View className='flex flex-row mb-4 items-center justify-center'>
-                        <Text className='text-white'>Wall Angle: </Text>
-                        <TextInput className='text-white' keyboardType="decimal-pad" onChangeText={setAngle} value={angle} placeholder="67.9" />
-                        <Text className='text-white'>°</Text>
-                    </View>
+                    <InputField
+                        label="Wall Angle"
+                        value={angle}
+                        onChangeText={setAngle}
+                        placeholder="67.9"
+                        keyboardType="decimal-pad"
+                        suffix='°'
+                    />
 
-                    <View className='flex flex-row mb-4 items-center justify-center'>
+                    <InputField
+                        label="Wall Name"
+                        value={name}
+                        onChangeText={setName}
+                        placeholder="Pineapple Express"
+                        optional
+                    />
+
+                    <View className='flex flex-row mb-4'>
                         <Text className='text-white'>Top Out? </Text>
                         <Switch
                             value={topOut}
@@ -74,12 +115,11 @@ export default function wallInfo() {
                         />
                     </View>
 
-                    <View className='flex flex-row mb-4 items-center justify-center'>
-                        <Text className='text-white'>Wall Name: </Text>
-                        <TextInput className='text-white' onChangeText={setName} value={name} placeholder="Pineapple Express"/>
-                    </View>
-
-                    <Button title="Add Wall" onPress={addWall} />
+                    <PrimaryButton
+                        title="Add Wall"
+                        onPress={addWall}
+                        disabled={!validInput}
+                    />
                 </View>
             </View>
         </SafeAreaView>

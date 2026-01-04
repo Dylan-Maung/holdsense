@@ -6,6 +6,8 @@ import { MaterialIcons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { useRouteDataForm } from '@/src/context/routeContext';
 import WallCard from '@/src/components/wallCard';
+import FormHeader from '@/src/components/ui/formHeader';
+import PrimaryButton from '@/src/components/ui/primaryButton';
 
 export default function WallData() {
     const { formData } = useRouteDataForm();
@@ -33,6 +35,8 @@ export default function WallData() {
     return (
         <SafeAreaView className='flex-1 bg-black p-4'>
             <View className='flex-1 flex-col'>
+                <FormHeader step={3} totalSteps={4} title="Wall Info" />
+
                 <View className='flex flex-row w-full justify-between items-center mb-4'>
                     <Text className='text-white font-bold'>Walls</Text>
 
@@ -51,8 +55,12 @@ export default function WallData() {
                         ))}
                     </ScrollView>
                 </View>
-
-                <Button title="Map Hold Positions" onPress={handleNext}/>
+                
+                <PrimaryButton
+                    title="Map Hold Positions"
+                    onPress={handleNext}
+                    disabled={false}
+                />
             </View>
         </SafeAreaView>
     )

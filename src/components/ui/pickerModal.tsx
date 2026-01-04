@@ -11,6 +11,7 @@ interface PickerModalProps {
     onOpen: () => void;
     placeholder: string;
     pickerOptions: string[];
+    optional?: boolean;
 }
 
 const PickerModal = ({ 
@@ -21,7 +22,8 @@ const PickerModal = ({
     onClose,
     onOpen,
     placeholder, 
-    pickerOptions
+    pickerOptions,
+    optional
 }: PickerModalProps) => {
     const [tempValue, setTempValue] = useState(selectedValue || pickerOptions[0]);
 
@@ -36,13 +38,19 @@ const PickerModal = ({
 
     return (
         <View>
-            <View className='flex flex-row mb-4 items-center justify-center'>
-                <Text className='text-white'>{header}:</Text>
+            <View className='mb-4'>
+                <Text className='text-white mb-2'>
+                    {header} 
+                    {optional && <Text className='text-gray-400 text-sm'> (optional)</Text>}
+                </Text>
+                
                 <Pressable  
                     onPress={onOpen} 
-                    className='flex items-center justify-center bg-gray-700 rounded-lg'
+                    className='text-white border border-gray-700 rounded-lg px-4 py-3 bg-gray-800'
                 >
-                    <Text className='text-white px-4'>{selectedValue || placeholder}</Text>
+                    <Text className={selectedValue ? 'text-white' : 'text-gray-400'}>
+                        {selectedValue || placeholder}
+                    </Text>
                 </Pressable>
             </View>
             

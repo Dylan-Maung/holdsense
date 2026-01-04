@@ -1,5 +1,4 @@
-import { View, Text, ScrollView, Pressable, Button, Image, Alert } from 'react-native'
-import React, { useState } from 'react'
+import { View, Text, ScrollView, Pressable, Image, Alert } from 'react-native'
 import { useRouteDataForm } from '@/src/context/routeContext'
 import { router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -7,6 +6,9 @@ import { createRoute } from '@/src/services/routeService';
 import { RouteData } from '@/src/types/routeData';
 import uuid from 'react-native-uuid';
 import { useAuth } from '@/src/context/auth';
+import FormHeader from '@/src/components/ui/formHeader';
+import InfoCard from '@/src/components/ui/infoCard';
+import PrimaryButton from '@/src/components/ui/primaryButton';
 
 export default function holdPositions() {
   const { formData, placedHolds = [] } = useRouteDataForm();
@@ -47,11 +49,13 @@ export default function holdPositions() {
   return (
     <SafeAreaView className='flex-1 bg-black p-4'>
             <View className='flex-1 flex-col'>
+              <FormHeader step={4} totalSteps={4} title="Hold Positions" />
+
                 <View className='flex flex-row w-full justify-between items-center mb-4'>
                   <Text className='text-white'>Select wall to place holds</Text>
                 </View>
 
-                <View className='flex-1'>
+                <View className='flex-1 mb-4'>
                   <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                       {formData.fullRouteImages?.map((wall) => (
                           <Pressable key={wall.id} onPress={() => router.push(`/addRoute/placeHold?wallId=${wall.id}`)}>
@@ -72,12 +76,17 @@ export default function holdPositions() {
                   </ScrollView>
                 </View>
                 
-                <View>
-                  <Text className='text-white'>Placed Holds: {placedHolds.length}</Text>
-                  <Text className='text-white'>Total Holds: { (formData?.holds?.length || 0) }</Text>
-                  <Text className='text-white'>Holds Remaining: {remainingCount}</Text>
-                  <Button title="Save Route" onPress={addRoute}/>
+                <View className='flex-1 gap-4'>
+                  <InfoCard title='Placed Holds' content={placedHolds.length}/>
+                  <InfoCard title='Total Holds' content={(formData?.holds?.length || 0)}/>
+                  <InfoCard title='Holds Remaining' content={remainingCount}/>
                 </View>
+                
+                <PrimaryButton
+                    title="Save Route"
+                    onPress={addRoute}
+                    disabled={false}
+                />
             </View>
         </SafeAreaView>
   )

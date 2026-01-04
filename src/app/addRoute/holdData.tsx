@@ -6,6 +6,8 @@ import { useRouteDataForm } from '@/src/context/routeContext';
 import * as ImagePicker from 'expo-image-picker';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import HoldCard from '@/src/components/holdCard';
+import FormHeader from '@/src/components/ui/formHeader';
+import PrimaryButton from '@/src/components/ui/primaryButton';
 
 export default function HoldData() {
     const { formData } = useRouteDataForm();
@@ -44,6 +46,8 @@ export default function HoldData() {
     return (
         <SafeAreaView className='flex-1 bg-black p-4'>
             <View className='flex-1 flex-col'>
+                <FormHeader step={2} totalSteps={4} title="Hold Info" />
+
                 <View className='flex flex-row w-full justify-between items-center mb-4'>
                     <Text className='text-white font-bold'>Holds</Text>
 
@@ -62,8 +66,12 @@ export default function HoldData() {
                         ))}
                     </ScrollView>
                 </View>
-
-                <Button title="Add Wall Info" onPress={handleNext}/>
+                
+                <PrimaryButton
+                    title="Add Wall Info"
+                    onPress={handleNext}
+                    disabled={false}
+                />
             </View>
         </SafeAreaView>
     )
