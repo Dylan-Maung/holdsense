@@ -1,4 +1,4 @@
-import { View, Text, Pressable, ScrollView } from 'react-native'
+import { View, Text, Pressable, ScrollView, ActivityIndicator, Alert } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { router, useLocalSearchParams } from 'expo-router'
 import { RouteData } from '@/src/types/routeData';
@@ -7,22 +7,36 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import ImageCarousel from '@/src/components/ui/imageCarousel';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import InfoCard from '@/src/components/ui/infoCard';
-//import { generateBeta } from '@/src/services/betaService';
+import { GenerateBeta } from '@/src/services/betaService';
 import PrimaryButton from '@/src/components/ui/primaryButton';
+import { UserProfile } from '@/src/types/userProfile';
+import { useAuth } from '@/src/context/auth';
+import { getUserProfile } from '@/src/services/userService';
 
 export default function RouteDetails() {
     const { id } = useLocalSearchParams();
+    const { user } = useAuth();
     const [route, setRoute] = useState<RouteData | null>(null);
+    const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
     const [generatedBeta, setGeneratedBeta] = useState<string | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [isGenerating, setIsGenerating] = useState(false);
 
     useEffect(() => {
         const fetchRoutes = async () => {
             const route = await getRouteById(id as string);
             setRoute(route);
-            }
+        }
+
+        const fetchProfile = async () => {
+            const profile = await getUserProfile(user!.sub);
+            setUserProfile(profile);
+            setLoading(false);
+        }
 
         fetchRoutes();
-    }, [id]);
+        fetchProfile();
+    }, [id, user]);
 
     if (!route) {
         return (
@@ -32,10 +46,19 @@ export default function RouteDetails() {
         );
     }
 
+    if (loading) return <ActivityIndicator />
+
     const handleBetaGeneration = async () => {
-        return (
-            setGeneratedBeta("Generated Beta")
-        )
+        setIsGenerating(true);
+        try {
+            const beta = await GenerateBeta(route, userProfile!);
+            setGeneratedBeta(beta);
+        } catch (error) {
+            console.error('Beta generation error:', error);
+            Alert.alert('Error', 'Failed to generate beta. Please try again.');
+        } finally {
+            setIsGenerating(false);
+        }
     }
 
     return (
@@ -100,13 +123,17 @@ export default function RouteDetails() {
                         
                         {!generatedBeta ? (
                             <PrimaryButton
-                                title="Generate Beta"
+                                title={isGenerating ? "Generating..." : "Generate Beta"}
                                 onPress={handleBetaGeneration}
-                                disabled={false}
+                                disabled={isGenerating}
                             />
-  
                         ) : (
-                            <Text className='text-white mb-4'>{generatedBeta}</Text>
+                            <View>
+                                <Text className='text-white mb-4'>{generatedBeta}</Text>
+                                <Pressable onPress={handleBetaGeneration}>
+                                    <Text className='text-blue-500'>Regenerate</Text>
+                                </Pressable>
+                            </View>
                         )}
                     </View>
                 </View>

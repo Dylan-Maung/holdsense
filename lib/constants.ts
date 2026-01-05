@@ -22,3 +22,6 @@ export const COOKIE_OPTIONS = {
     path: "/",
     maxAge: COOKIE_MAX_AGE
 };
+
+// Expo public for now while testing
+export const OPENAI_API_KEY = process.env.EXPO_PUBLIC_OPENAI_API_KEY;
