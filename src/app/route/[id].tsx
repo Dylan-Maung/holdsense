@@ -7,10 +7,13 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import ImageCarousel from '@/src/components/ui/imageCarousel';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import InfoCard from '@/src/components/ui/infoCard';
+//import { generateBeta } from '@/src/services/betaService';
+import PrimaryButton from '@/src/components/ui/primaryButton';
 
 export default function RouteDetails() {
     const { id } = useLocalSearchParams();
     const [route, setRoute] = useState<RouteData | null>(null);
+    const [generatedBeta, setGeneratedBeta] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchRoutes = async () => {
@@ -27,6 +30,12 @@ export default function RouteDetails() {
                 <Text className='text-white'>Loading...</Text>
             </SafeAreaView>
         );
+    }
+
+    const handleBetaGeneration = async () => {
+        return (
+            setGeneratedBeta("Generated Beta")
+        )
     }
 
     return (
@@ -80,8 +89,25 @@ export default function RouteDetails() {
                         <ImageCarousel items={route.fullRouteImages} />
                     </View>
 
-                    <View>
+                    <View className='mb-4'>
                         <InfoCard title="Route Notes" content={route.notes as string} />
+                    </View>
+
+                    <View>
+                        <Text className='text-white text-lg font-semibold mb-2 border-b border-gray-700 pb-2'>
+                            AI Beta Generation
+                        </Text>
+                        
+                        {!generatedBeta ? (
+                            <PrimaryButton
+                                title="Generate Beta"
+                                onPress={handleBetaGeneration}
+                                disabled={false}
+                            />
+  
+                        ) : (
+                            <Text className='text-white mb-4'>{generatedBeta}</Text>
+                        )}
                     </View>
                 </View>
             </ScrollView>
