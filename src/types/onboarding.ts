@@ -1,7 +1,7 @@
 export interface OnboardingForm {
     // onboarding/profile.tsx
     username?: string;
-    bio?: string;
+    bio?: string; // Optional
 
     // onboarding/anthropometry.tsx
     height?: number;

@@ -4,6 +4,7 @@ import { getUserProfile } from '@/src/services/userService'
 import { useAuth } from '@/src/context/auth'
 import { UserProfile } from '@/src/types/userProfile'
 import { Alert } from 'react-native'
+import PrimaryButton from '@/src/components/ui/primaryButton'
 
 export default function Profile() {
   const { user, signOut } = useAuth();
@@ -75,7 +76,11 @@ export default function Profile() {
 
       </View>
 
-      <Button title="Sign Out" onPress={handleLogout}/>
+      <PrimaryButton
+          title="Sign Out"
+          onPress={handleLogout}
+          disabled={false}
+      />
     </View>
   )
 }

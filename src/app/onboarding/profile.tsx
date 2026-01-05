@@ -3,11 +3,17 @@ import React from 'react'
 import { router } from 'expo-router'
 import { useOnboarding } from '@/src/context/onboardingContext';
 import { useState } from 'react';
+import InputField from '@/src/components/ui/inputField';
+import PrimaryButton from '@/src/components/ui/primaryButton';
+import FormHeader from '@/src/components/ui/formHeader';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function Profile() {
   const { formData, updateFormData } = useOnboarding();
   const [username, setUsername] = useState(formData.username || '');
   const [bio, setBio] = useState(formData.bio || '');
+
+  const validInput = username;
 
   const handleNext = () => {
     updateFormData({ username, bio })
@@ -15,20 +21,32 @@ export default function Profile() {
   };
 
   return (
-    <View className='flex-1 justify-center items-center'>
-        <Text>Please Enter your username and bio(optional)</Text>
+    <SafeAreaView className='flex-1 bg-black p-4'>
+      <View className='flex-1'>
+        <FormHeader step={1} totalSteps={4} title="Profile" />
 
-        <View className='flex flex-row gap-2'>
-          <Text>Username: </Text>
-          <TextInput onChangeText={setUsername} value={username} placeholder="Username"/>
-        </View>
+        <InputField
+            label="Username"
+            value={username}
+            onChangeText={setUsername}
+            placeholder="Username"
+        />
 
-        <View className='flex flex-row gap-2'>
-          <Text>Bio: </Text>
-          <TextInput onChangeText={setBio} value={bio} placeholder="Hi, im ..."/>
-        </View>
-        
-        <Button title="Next" onPress={handleNext}/>
-    </View>
+        <InputField
+            label="Bio"
+            value={bio}
+            onChangeText={setBio}
+            placeholder="Hi, im ..."
+            multiline
+            optional
+        />
+
+        <PrimaryButton
+            title="Next"
+            onPress={handleNext}
+            disabled={!validInput}
+        />
+      </View>
+    </SafeAreaView>
   )
 }

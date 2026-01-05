@@ -12,14 +12,6 @@ export default function Home() {
   const { profile, user } = useAuth();
   const [userRoutes, setUserRoutes] = useState<RouteData[]>([]);
 
-  if (!profile) {
-    return (
-      <View className='flex-1 justify-center items-center'>
-        <ActivityIndicator size="large" />
-      </View>
-    );
-  }
-
   useEffect(() => {
     const fetchRoutes = async () => {
       const routes = await getRecentUserRoutes(user!.sub);
@@ -29,10 +21,18 @@ export default function Home() {
     fetchRoutes();
   }, [user]);
 
+  if (!profile) {
+    return (
+      <View className='flex-1 justify-center items-center'>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
+
   return (
     <SafeAreaView className='flex-1 bg-black' edges={['top']}>
       <View className='flex-1 px-4'>
-        <Text className='text-white mb-4'>Welcome back {profile!.username} !</Text>
+        <Text className='text-white mb-4 text-2xl font-bold'>Welcome back!</Text>
 
         <View className='flex flex-row justify-between items-center mb-4'>
           <Text className='text-white'>Routes</Text>

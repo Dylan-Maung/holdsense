@@ -5,16 +5,21 @@ import * as ImagePicker from 'expo-image-picker';
 import { useOnboarding } from '@/src/context/onboardingContext';
 import { useAuth } from '@/src/context/auth';
 import { createUserProfile, getUserProfile } from '@/src/services/userService';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import FormHeader from '@/src/components/ui/formHeader';
+import PrimaryButton from '@/src/components/ui/primaryButton';
 
 export default function ProfilePicture() {
   const { formData, updateFormData } = useOnboarding();
   const [profilePicture, setProfilePicture] = useState<string | null>(null);
   const { user, setOnboarded, setProfile} = useAuth();
 
+  const validInput = profilePicture;
+
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       allowsEditing: true,
-      quality: 1,
+      quality: 0.2,
     });
 
     if (!result.canceled) {
@@ -47,19 +52,31 @@ export default function ProfilePicture() {
   };
   
   return (
-    <View className='flex-1 justify-center items-center'>
-      <Text>Please set your profile picture</Text>
+    <SafeAreaView className='flex-1 bg-black p-4'>
+      <View className='flex-1 flex gap-6'>
+        <FormHeader step={4} totalSteps={4} title="Profile Picture" />
 
-      {profilePicture && (
-        <Image 
-          source={{ uri: profilePicture }} 
-          className="w-48 h-48 rounded-full my-5"
+        {profilePicture && (
+          <View className='flex items-center'>
+            <Image 
+              source={{ uri: profilePicture }} 
+              className="w-48 h-48 rounded-full my-5"
+            />
+          </View>
+        )}
+
+        <PrimaryButton
+            title="Select an image from your camera roll"
+            onPress={pickImage}
+            disabled={false}
         />
-      )}
 
-      <Button title="Pick an image from camera roll" onPress={pickImage} />
-
-      <Button title="Save and Finish" onPress={handleFinish}/>
-    </View>
+        <PrimaryButton
+            title="Save and Finish"
+            onPress={handleFinish}
+            disabled={!validInput}
+        />
+      </View>
+    </SafeAreaView>
   )
 }
