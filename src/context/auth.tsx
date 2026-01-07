@@ -8,6 +8,8 @@ import { tokenCache } from "../utils/cache";
 import { useRouter } from "expo-router";
 import { getUserProfile } from "../services/userService";
 import { UserProfile } from "../types/userProfile";
+import { GoogleAuthProvider, signInWithCredential } from "firebase/auth";
+import { auth } from "@/lib/firebaseConfig";
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -22,7 +24,9 @@ export type AuthUser = {
     provider?: string;
     exp?: number;
     cookieExpiration?: number;
+    firebase_uid: string;
 }
+
 const AuthContext = React.createContext({
     user: null as AuthUser | null,
     profile: null as UserProfile | null,
@@ -66,6 +70,8 @@ export const AuthProvider = ({ children }: {children: React.ReactNode }) => {
         const restoreSession = async() => {
             setIsLoading(true);
             try {
+                const firebaseUser = auth.currentUser;
+
                 if (isWeb) {
                     const sessionRestoreResponse = await fetch(`${BASE_URL}/api/auth/session`, {
                         method: 'GET',
@@ -74,23 +80,32 @@ export const AuthProvider = ({ children }: {children: React.ReactNode }) => {
 
                     if (sessionRestoreResponse.ok) {
                         const userData = await sessionRestoreResponse.json() as AuthUser;
-                        setUser(userData as AuthUser)
+                        const updatedUser: AuthUser = {
+                            ...userData,
+                            firebase_uid: firebaseUser?.uid || userData.firebase_uid,
+                        };
+                        setUser(updatedUser);
                         
-                        const profile = await getUserProfile(userData.sub);
+                        const profile = await getUserProfile(updatedUser.firebase_uid);
                         setOnboarded(!!profile);
                         setProfile(profile);
                     }
                 } else {
                     // Native (mobile)
                     const storedAccessToken = await tokenCache?.getToken(TOKEN_KEY_NAME);
-
+                    const firebaseUser = auth.currentUser;
+                    
                     if (storedAccessToken) {
                         try {
                             const decoded = jose.decodeJwt(storedAccessToken) as AuthUser;
                             setAccessToken(storedAccessToken);
-                            setUser(decoded as AuthUser);
+                            const updatedUser: AuthUser = {
+                                ...decoded,
+                                firebase_uid: firebaseUser?.uid || decoded.firebase_uid,
+                            };
+                            setUser(updatedUser);
 
-                            const profile = await getUserProfile(decoded.sub);
+                            const profile = await getUserProfile(updatedUser.firebase_uid);
                             setOnboarded(!!profile);
                             setProfile(profile);
                         } catch (e) {
@@ -128,8 +143,6 @@ export const AuthProvider = ({ children }: {children: React.ReactNode }) => {
                     discovery
                 );
 
-                //console.log("token response", tokenResponse)
-
                 if (isWeb) {
                     const sessionResponse = await fetch(`${BASE_URL}/api/auth/session`, {
                         method: "GET",
@@ -137,21 +150,29 @@ export const AuthProvider = ({ children }: {children: React.ReactNode }) => {
                     });
 
                     if (sessionResponse.ok) {
+                        // Set Firebase credentials:
+                        const idToken = tokenResponse.idToken;
+                        const credential = GoogleAuthProvider.credential(idToken);
+                        const firebaseUserCredential = await signInWithCredential(auth, credential);
+                        const firebaseUser = firebaseUserCredential.user;
+
                         const sessionData = await sessionResponse.json() as AuthUser;
-                        setUser(sessionData as AuthUser);
-                        
-                        let profile = await getUserProfile(sessionData.sub);
+
+                        const userData: AuthUser = {
+                            ...sessionData,
+                            firebase_uid: firebaseUser.uid,
+                        };
+                        setUser(userData);
+
+                        let profile = await getUserProfile(firebaseUser.uid);
                         setProfile(profile);
-                        //console.log("Profile is: ", profile);
 
                         // Onboarding first time user
                         if (!profile) {
                             console.log("New User")
                             setOnboarded(false);
-                            //router.replace('/onboarding');
                         } else {
                             setOnboarded(true);
-                            //setTimeout(() => router.replace('/(mainTabs)/home'), 10);
                         }
                     } else {
                         router.replace('/login');
@@ -159,14 +180,32 @@ export const AuthProvider = ({ children }: {children: React.ReactNode }) => {
                 } else {
                     // Native (mobile)
                     const accessToken = tokenResponse.accessToken;
+                    const idToken = tokenResponse.idToken;
+
+                    // Set Firebase credentials:
+                    const credential = GoogleAuthProvider.credential(idToken);
+                    const firebaseUserCredential = await signInWithCredential(auth, credential);
+                    const firebaseUser = firebaseUserCredential.user;
 
                     setAccessToken(accessToken);
                     tokenCache?.saveToken(TOKEN_KEY_NAME, accessToken);
 
-                    //console.log(accessToken);
+                    const decoded = jose.decodeJwt(accessToken) as AuthUser;
+                    const userData: AuthUser = {
+                        ... decoded,
+                        firebase_uid: firebaseUser.uid,
+                    };
+                    setUser(userData);
 
-                    const decoded = jose.decodeJwt(accessToken);
-                    setUser(decoded as AuthUser);
+                    let profile = await getUserProfile(firebaseUser.uid);
+                    setProfile(profile);
+
+                    if (!profile) {
+                        console.log("New User - mobile");
+                        setOnboarded(false);
+                    } else {
+                        setOnboarded(true);
+                    }
                 }
             } catch(e) {
                 console.log(e)
@@ -206,7 +245,11 @@ export const AuthProvider = ({ children }: {children: React.ReactNode }) => {
             await tokenCache?.deleteToken(TOKEN_KEY_NAME);
         }
 
+        await auth.signOut();
+
         setUser(null);
+        setProfile(null);
+        setOnboarded(false);
         router.replace('/login')
     };
 

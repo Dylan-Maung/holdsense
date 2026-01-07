@@ -1,6 +1,7 @@
 export interface UserProfile {
     // Required
-    id: string;
+    id: string; // google OAuth Sub
+    uid: string; // Firebase UID
     name: string;
     username: string;
     email: string;

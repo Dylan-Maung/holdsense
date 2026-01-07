@@ -61,6 +61,7 @@ export async function POST(request: Request) {
     if (platform === "web") {
         const response = Response.json({
             access_token: accessToken,
+            id_token: data.id_token,
             token_type: "Bearer",
             expires_in: COOKIE_MAX_AGE
         });
@@ -77,5 +78,5 @@ export async function POST(request: Request) {
         return response;
     }
 
-    return Response.json({ access_token: accessToken});
+    return Response.json({ access_token: accessToken, id_token: data.id_token});
 }

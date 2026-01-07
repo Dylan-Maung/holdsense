@@ -24,7 +24,7 @@ export default function holdPositions() {
         
         const routeData: RouteData = {
             id: uuid.v4().toString(),
-            userId: user!.sub,
+            userId: user!.firebase_uid,
             grade: formData.grade,
             gym: formData.gym,
             date: formData.date || new Date().toISOString().split('T')[0],

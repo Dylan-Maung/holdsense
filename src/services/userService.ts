@@ -3,16 +3,23 @@ import { db, storage } from "@/lib/firebaseConfig";
 import { UserProfile } from "../types/userProfile";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 
-export async function getUserProfile(userId: string) {
-  const docRef = doc(db, "users", userId);
-  const docSnap = await getDoc(docRef);
+// Store with Firebase UID
+export async function getUserProfile(firebaseUID: string) {
+  try {
+    const docRef = doc(db, "users", firebaseUID);
+    const docSnap = await getDoc(docRef);
 
-  if (docSnap.exists()) {
-    return docSnap.data() as UserProfile;
-  } else {
-    // docSnap.data() will be undefined in this case
-    console.log("No such document!");
-    return null;
+    if (docSnap.exists()) {
+      return docSnap.data() as UserProfile;
+    } else {
+      // docSnap.data() will be undefined in this case
+      console.log("No such document!");
+      return null;
+    }
+  } catch (error: any) {
+    console.error('Firestore error:', error.code, error.message);
+    console.error('Full error:', error);
+    throw error;
   }
 }
 
@@ -23,7 +30,7 @@ export async function createUserProfile(uri: string | null, data: UserProfile) {
   if (uri) {
     const response = await fetch(uri);
     const blob = await response.blob();
-    const storageRef = ref(storage, `profilePictures/${data.id}.jpg`);
+    const storageRef = ref(storage, `profilePictures/${data.uid}.jpg`);
     await uploadBytes(storageRef, blob);
 
     // Get the download Url so we can store that in firestore
@@ -31,7 +38,7 @@ export async function createUserProfile(uri: string | null, data: UserProfile) {
   }
 
   // store data to firestore
-  await setDoc(doc(db, "users", data.id), {
+  await setDoc(doc(db, "users", data.uid), {
     createdAt: new Date().toISOString(),
     ...data,
     profilePicture: profilePictureUrl,

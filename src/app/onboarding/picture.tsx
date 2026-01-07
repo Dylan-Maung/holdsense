@@ -33,8 +33,18 @@ export default function ProfilePicture() {
 
   // Store new user in db and set onboarded flag to true
   const handleFinish = async () => {
+    console.log('Full user object:', user);  // ✅ Add this
+    console.log('user.firebase_uid:', user?.firebase_uid);  // ✅ Add this
+    console.log('user.sub:', user?.sub);  // ✅ Add this
+    
+    if (!user?.firebase_uid) {  // ✅ Safety check
+        console.error('No firebase_uid available!');
+        Alert.alert('Error', 'Authentication issue. Please sign out and back in.');
+        return;
+    }
     await createUserProfile(profilePicture, {
       id: user!.sub,
+      uid: user!.firebase_uid,
       name: user!.name, 
       username: formData.username!,
       email: user!.email, 
@@ -46,7 +56,7 @@ export default function ProfilePicture() {
     });
 
     setOnboarded(true);
-    const newProfile = await getUserProfile(user!.sub)
+    const newProfile = await getUserProfile(user!.firebase_uid)
     setProfile(newProfile);
     router.replace('/(mainTabs)/home');
   };

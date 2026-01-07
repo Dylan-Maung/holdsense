@@ -13,7 +13,7 @@ export default function Profile() {
 
   useEffect(() => {
     const fetchProfile = async () => {
-      const profile = await getUserProfile(user!.sub);
+      const profile = await getUserProfile(user?.firebase_uid as string);
       setUserProfile(profile);
       setLoading(false);
     }

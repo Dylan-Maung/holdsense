@@ -11,7 +11,7 @@ export async function createRoute(holds: Hold[], fullRouteImages: Wall[], data: 
         holds.map(async (hold, index) => {
             const response = await fetch(hold.imageUri);
             const blob = await response.blob();
-            const storageRef = ref(storage, `routes/${data.id}/holds/${hold.id}.jpg`);
+            const storageRef = ref(storage, `routes/${data.userId}/${data.id}/holds/${hold.id}.jpg`);
             await uploadBytes(storageRef, blob);
             const downloadUrl = await getDownloadURL(storageRef);
             
@@ -27,7 +27,7 @@ export async function createRoute(holds: Hold[], fullRouteImages: Wall[], data: 
         fullRouteImages.map(async (wall) => {
             const response = await fetch(wall.imageUri);
             const blob = await response.blob();
-            const storageRef = ref(storage, `routes/${data.id}/walls/${wall.id}.jpg`);
+            const storageRef = ref(storage, `routes/${data.userId}/${data.id}/walls/${wall.id}.jpg`);
             await uploadBytes(storageRef, blob);
             const downloadUrl = await getDownloadURL(storageRef);
             
