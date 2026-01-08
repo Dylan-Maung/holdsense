@@ -70,6 +70,13 @@ export const AuthProvider = ({ children }: {children: React.ReactNode }) => {
         const restoreSession = async() => {
             setIsLoading(true);
             try {
+                await new Promise((resolve) => {
+                    const unsubscribe = auth.onAuthStateChanged((user) => {
+                        unsubscribe();
+                        resolve(user);
+                    });
+                });
+
                 const firebaseUser = auth.currentUser;
 
                 if (isWeb) {
@@ -93,6 +100,14 @@ export const AuthProvider = ({ children }: {children: React.ReactNode }) => {
                 } else {
                     // Native (mobile)
                     const storedAccessToken = await tokenCache?.getToken(TOKEN_KEY_NAME);
+
+                    await new Promise((resolve) => {
+                        const unsubscribe = auth.onAuthStateChanged((user) => {
+                            unsubscribe();
+                            resolve(user);
+                        });
+                    });
+                    
                     const firebaseUser = auth.currentUser;
                     
                     if (storedAccessToken) {

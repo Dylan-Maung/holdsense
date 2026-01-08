@@ -1,4 +1,4 @@
-import { View, Text, Pressable, ScrollView, ActivityIndicator, Alert } from 'react-native'
+import { View, Text, Pressable, ScrollView, ActivityIndicator, Alert, Image, Dimensions } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { router, useLocalSearchParams } from 'expo-router'
 import { RouteData } from '@/src/types/routeData';
@@ -29,7 +29,7 @@ export default function RouteDetails() {
         }
 
         const fetchProfile = async () => {
-            const profile = await getUserProfile(user!.sub);
+            const profile = await getUserProfile(user?.firebase_uid as string);
             setUserProfile(profile);
             setLoading(false);
         }

@@ -59,22 +59,73 @@ export function buildBetaPrompt(route: RouteData, userProfile: UserProfile): str
     - Wall Configuration: ${wallAngleText}${hasTopOut ? ' (Top Out)' : ''}
     - Color: ${route.color || 'N/A'}
     ${anthropometrySection}
-    
-    HOLDS (positions normalized 0-1, where x=0 is left edge, y=0 is top, y=1 is bottom):
+
+    HOLDS (numbered for reference - positions normalized 0-1, where x=0 is left edge, y=0 is top, y=1 is bottom):
     ${holdsSection}
-    
+
     ADDITIONAL CONTEXT:
     ${wallContext}
     ${topOutContext}
     - Holds higher up (lower y value) extend further from wall as angle increases
     ${apeContext}
     - Route has ${route.holds.length} total holds (holds include footholds also)
-    
+    - Holds CAN BE REUSED with different orientations (e.g., a pinch can become an undercling when climber is above it)
+
+    OFFICIAL CLIMBING RULES:
+
+    VALID START POSITION:
+    - If there are TWO starting holds labeled, you MUST use one hand on each (cannot start matched on one hold)
+    - Feet MUST be off the ground (can be smeared on wall, on a hold, or floating, but NOT touching the floor)
+    - Common start positions: both feet smeared on wall, one foot on a low hold, feet floating/cutting
+
+    VALID FINISH POSITION:
+    - Both hands MUST be on the finish hold(s)
+    - Must be STABLE enough to hold position for 3 seconds without readjusting
+    - Body position must support maintaining this position (hips, feet placement matter for stability)
+    - If finishing on a sloper or bad hold, explain foot placement needed for stability
+
+    BETA FORMAT REQUIREMENTS:
+    Your beta must be EXTREMELY SPECIFIC about each limb on each move:
+
+    Example of GOOD beta:
+    "Move 1: Right hand on Hold #3 (crimp), left hand on Hold #1 (jug), right toe on Hold #5 (edge), left foot flagged for balance"
+
+    Example of BAD beta:
+    "Both hands on start holds, feet on edges" TOO VAGUE
+
+    For each move, specify:
+    - Which SPECIFIC hold number each limb uses (e.g., "Hold #7")
+    - Which hand/foot (right hand, left foot, etc.)
+    - Foot technique if applicable (toe-in, heel hook, flag, smear, etc.)
+    - Body position (hips left, right shoulder dropped, etc.)
+
+    STARTING POSITION:
+    - Analyze if starting CROSSED (e.g., left hand on right-side hold) sets up better for the next move
+    - Explain WHY a specific starting hand configuration is better
+
+    FOOT PLACEMENT PRIORITY (highest to lowest):
+    1. **Use actual footholds** if available below or near start holds (easiest, most stable)
+    2. **Smear on wall** only if no footholds are accessible
+    3. **Flag or cut feet** only for specific balance/reach reasons
+
+    IMPORTANT: If there are footholds labeled as "foot" usage below the start position, ALWAYS prefer using them over smearing. Only suggest smearing if:
+    - No footholds are reachable from start position
+    - The footholds would put body in worse position for first move
+    - Route intentionally starts with no feet (rare, mention this is unusual)
+
+    Example GOOD start:
+    "Right foot on Hold #8 (edge, foot), left toe on Hold #9 (volume, foot)"
+
+    Example BAD start when holds exist:
+    "Both feet smearing on wall" (if Hold #8 and #9 are available)
+
     Please provide:
-    1. Concise step-by-step beta
-    2. Key crux moves
-    3. Tips specific to the climber's anthropometry
-    4. Suggested body positioning`;
+    1. Starting position with hand configuration and foot placement explanation
+    2. Move-by-move beta with hold numbers and all 4 limbs specified
+    3. Key crux moves with extra detail on body positioning
+    4. Finishing position with stability notes
+    5. Tips specific to climber's anthropometry (height: ${userProfile.height}", ape index: ${userProfile.reach})
+    6. Alternative sequences if applicable`;
 }
 
 export async function GenerateBeta(route: RouteData, userProfile: UserProfile) {

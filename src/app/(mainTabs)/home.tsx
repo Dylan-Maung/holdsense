@@ -14,7 +14,7 @@ export default function Home() {
 
   useEffect(() => {
     const fetchRoutes = async () => {
-      const routes = await getRecentUserRoutes(user!.sub);
+      const routes = await getRecentUserRoutes(user?.firebase_uid as string);
       setUserRoutes(routes);
     }
     
