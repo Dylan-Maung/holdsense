@@ -116,6 +116,37 @@ export default function RouteDetails() {
                         <InfoCard title="Route Notes" content={route.notes as string} />
                     </View>
 
+                    <View className='mb-6'>
+                        <Text className='text-white text-lg font-semibold mb-3 border-b border-gray-700 pb-2'>
+                            Route Map
+                        </Text>
+                        
+                        <View className='relative'>
+                            <Image
+                                source={{ uri: route.fullRouteImages[0].imageUri }}
+                                style={{ width: Dimensions.get('window').width - 32, height: 600 }}
+                                resizeMode='contain'
+                            />
+
+                            {route.holds.map((hold, index) => (
+                                <View
+                                    key={hold.id}
+                                    style={{
+                                        position: 'absolute',
+                                        left: `${hold.position.x * 100}%`,
+                                        top: `${hold.position.y * 100}%`,
+                                        transform: [{ translateX: -16 }, { translateY: -16 }],
+                                    }}
+                                    className='bg-blue-500 rounded-full w-8 h-8 items-center justify-center border-2 border-white'
+                                >
+                                    <Text className='text-white font-bold text-xs'>
+                                        {index + 1}
+                                    </Text>
+                                </View>
+                            ))}
+                        </View>
+                    </View>
+
                     <View>
                         <Text className='text-white text-lg font-semibold mb-2 border-b border-gray-700 pb-2'>
                             AI Beta Generation

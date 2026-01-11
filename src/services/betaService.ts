@@ -22,15 +22,15 @@ interface OpenAIResponse {
 }
 
 export function buildBetaPrompt(route: RouteData, userProfile: UserProfile): string {
-    const formatHold = (hold: any) => {
-        return `- ${hold.holdType} (${hold.usedBy.toLowerCase()})
+    const formatHold = (hold: any, index: number) => {
+        return `Hold #${index + 1}: ${hold.holdType} (${hold.usedBy.toLowerCase()})
         - Type: ${hold.holdType}
         - Usage: ${hold.tag}
         - Position: x=${hold.position.x.toFixed(2)}, y=${hold.position.y.toFixed(2)}, z=${hold.position.z.toFixed(2)}
         - Color: ${hold.color || 'N/A'}
         - Orientation: ${hold.orientation}°${hold.dualTexture ? '\n  - Dual Texture: Yes' : ''}`;
     };
-    const holdsSection = route.holds.map(formatHold).join('\n\n');
+    const holdsSection = route.holds.map((hold, index) => formatHold(hold, index)).join('\n\n');
     
     const wallInfo = route.fullRouteImages.map(w => `${w.angle}° ${w.type}`);
     const wallAngleText = wallInfo.length === 1 
@@ -54,6 +54,13 @@ export function buildBetaPrompt(route: RouteData, userProfile: UserProfile): str
     // Build full prompt
     return `You are an expert climbing coach. Generate detailed beta (movement advice) for the following boulder problem.
 
+    IMPORTANT: The guidelines below provide general climbing principles and examples. They are NOT specific to this route's 
+    holds - use them to inform your beta generation, but base your actual recommendations on the specific holds provided for THIS route.
+    
+    ROUTE INFORMATION:
+    - Grade: ${route.grade}
+    ...
+
     ROUTE INFORMATION:
     - Grade: ${route.grade}
     - Wall Configuration: ${wallAngleText}${hasTopOut ? ' (Top Out)' : ''}
@@ -74,6 +81,7 @@ export function buildBetaPrompt(route: RouteData, userProfile: UserProfile): str
     OFFICIAL CLIMBING RULES:
 
     VALID START POSITION:
+    - If there is only ONE starting hold labeled, you must start matched on that hold
     - If there are TWO starting holds labeled, you MUST use one hand on each (cannot start matched on one hold)
     - Feet MUST be off the ground (can be smeared on wall, on a hold, or floating, but NOT touching the floor)
     - Common start positions: both feet smeared on wall, one foot on a low hold, feet floating/cutting
@@ -118,6 +126,44 @@ export function buildBetaPrompt(route: RouteData, userProfile: UserProfile): str
 
     Example BAD start when holds exist:
     "Both feet smearing on wall" (if Hold #8 and #9 are available)
+    WALL SCALE CALIBRATION:
+
+    WALL SCALE CALIBRATION:
+    Position coordinates are normalized 0-1 (x=0 is left edge, y=0 is top, y=1 is bottom, z represents depth from wall due to overhang)
+    
+    Real-world distance measurements for an example route (use this as a relative scale):
+    - Position (0.29, 0.54, -0.04) to (0.67, 0.41, -0.05) = 35 inches
+    - Position (0.29, 0.54, -0.04) to (0.78, 0.23, -0.07) = 53 inches  
+    - Position (0.78, 0.23, -0.07) to (0.41, 0.16, -0.07) = 29 inches
+    - Position (0.41, 0.16, -0.07) to (0.29, 0.01, -0.08) = 14 inches
+    
+    Note: Z-axis represents hold depth relative to wall base (z=0 at ground level):
+    - Negative z: Hold is recessed/further from climber (common on slabs - walls leaning away)
+    - Positive z: Hold protrudes/closer to climber (common on overhangs - walls leaning toward you)
+    - More extreme z values (±) indicate holds are further from the vertical plane
+    - On steep overhangs, higher holds (lower y) have larger positive z
+    - On slabs, higher holds (lower y) have more negative z
+
+    REACH GUIDELINES:
+    - 14-24 inches: Easy static reach for most climbers
+    - 25-35 inches: Standard climbing move, comfortable
+    - 36-48 inches: Large reach, may require good foot placement or body tension
+    - 49-60 inches: VERY large reach, likely requires:
+    * Dynamic move for climbers under 5'8"
+    * Maximum extension for taller climbers
+    * Intermediate holds if available
+    - 60+ inches: Almost certainly requires a dyno or finding an intermediate hold
+
+    BODY MECHANICS GUIDELINES (not strict rules):
+
+    Starting Position - Feet Placement:
+    - TYPICALLY feet are below hands (higher y-value) for standard starts
+    - However, high feet ARE valid for:
+    * Compression starts (feet high, pushing body into wall)
+    * Sit starts (feet on holds near hands)
+    * Technical/powerful starts on hard problems
+
+    If you suggest non-standard foot placement, explain the biomechanical advantage.
 
     Please provide:
     1. Starting position with hand configuration and foot placement explanation
@@ -138,7 +184,7 @@ export async function GenerateBeta(route: RouteData, userProfile: UserProfile) {
             'Authorization': `Bearer ${OPENAI_API_KEY}`
         },
         body: JSON.stringify({
-            model: 'gpt-4o-mini',
+            model: 'gpt-4-turbo',
             messages: [
                 { role: 'user', content: prompt }
             ],
@@ -155,6 +201,7 @@ export async function GenerateBeta(route: RouteData, userProfile: UserProfile) {
     }
 
     const beta = data.choices[0].message.content;
+    console.log(prompt)
 
     return beta
 }
