@@ -202,6 +202,7 @@ export async function GenerateBeta(route: RouteData, userProfile: UserProfile) {
 
     const beta = data.choices[0].message.content;
     console.log(prompt)
+    console.log(beta)
 
     return beta
 }
